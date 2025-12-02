@@ -90,6 +90,10 @@ namespace otpq::math::als::polynomial {
             }
             return 0;
         }
+
+
+
+
     };
 
     /**

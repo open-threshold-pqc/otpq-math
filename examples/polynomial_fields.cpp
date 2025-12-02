@@ -71,5 +71,6 @@ int main() {
     std::cout << "g(x) = " << g << "\n";
     std::cout << "f * g (x) = " << (f * g) << "\n";
 
+
     return 0;
 }

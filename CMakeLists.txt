@@ -46,8 +46,6 @@ target_link_libraries(otpqmath INTERFACE project_options)
 # ============================================================
 # Test executable
 # ============================================================
-add_executable(test main.cpp)
-target_link_libraries(test PRIVATE otpqmath project_options)
 
 # ============================================================
 # Examples

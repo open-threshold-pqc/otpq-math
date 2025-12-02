@@ -134,6 +134,11 @@ namespace otpq::math::als::polynomial {
             reduce();
         }
 
+        [[nodiscard]] bool is_zero() const {
+            return this->degree() == 0 && alg.is_zero(coeffs[0]);
+        }
+
+
         /// Polynomial addition.
         friend PolynomialField operator+(const PolynomialField &a,
                                          const PolynomialField &b) {

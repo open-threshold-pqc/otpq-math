@@ -1,14 +1,12 @@
 #include <iostream>
 #include <zmod_arithmetic.h>
 
-// Namespace alias for clarity and safety
 namespace mod = otpq::math::als::arith;
 
 int main() {
     std::cout << "=== ZmodNRing Example (ℤ/nℤ) ===\n";
 
-    // Ring mod 7
-    const mod::ZmodNRing<int> R7{7};
+    const mod::ZmodNRing R7{7};
 
     std::cout << "modulus = " << R7.mod << "\n";
     std::cout << "3 + 6 = " << R7.add(3, 6) << "   (mod 7)\n";
@@ -18,8 +16,8 @@ int main() {
 
     std::cout << "\n=== ZmodNField Example (𝔽₇) ===\n";
 
-    // Field mod 7 (requires prime modulus)
-    const mod::ZmodNField<int> F7{7};
+
+    const mod::ZmodNField F7{7};
 
     std::cout << "modulus = " << F7.mod << "\n";
     std::cout << "3 + 6  = " << F7.add(3, 6) << "\n";

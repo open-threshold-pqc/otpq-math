@@ -29,7 +29,6 @@ int main() {
     std::cout << p_ntt << '\n';
     std::cout << q_ntt << '\n';
 
-    p = fromNTT(p_ntt, 731434);
 
     std::cout << (mulNTT(p_ntt, q_ntt))  << '\n';
 

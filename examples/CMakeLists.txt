@@ -5,7 +5,7 @@ foreach(example_src ${EXAMPLE_SOURCES})
     get_filename_component(example_name ${example_src} NAME_WE)
 
     add_executable(${example_name} ${example_src})
-    target_link_libraries(${example_name} PRIVATE otpqmath project_options)
+    target_link_libraries(${example_name} PRIVATE libotpqmath project_options)
 
     message(STATUS "Configured example: ${example_name}")
 endforeach()

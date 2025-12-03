@@ -1,6 +1,7 @@
 #include <iostream>
 #include <array>
-#include "polynomial.h"
+#include <vector>
+#include <otpqmath/polynomial.h>
 
 using otpq::math::als::polynomial::Polynomial;
 
@@ -8,9 +9,9 @@ int main() {
     std::cout << "=== Polynomial Demonstration ===\n\n";
 
     // --------------------------------------------------
-    // Construct polynomial p(x) = 3 - x + 4x^3  with max degree < 5
+    // 1. Construct polynomial p(x) = 3 - x + 4x^3  with max degree < 5
     // --------------------------------------------------
-    Polynomial<5> p; // all coefficients begin as zero
+    Polynomial<5> p; // zero polynomial: [0,0,0,0,0]
 
     p[0] = 3; // constant term
     p[1] = -1; // −x
@@ -18,30 +19,45 @@ int main() {
 
     std::cout << "p(x) = " << p << "\n\n";
 
-    std::cout << "p capacity    = " << p.capacity() << "\n";
-    std::cout << "actual degree = " << p.degree() << "\n\n";
+    std::cout << "p.capacity()    = " << p.capacity() << "\n";
+    std::cout << "p.degree()      = " << p.degree() << "\n\n";
+
 
     // --------------------------------------------------
-    // Construct polynomial q(x) from an array
-    // q(x) = 5 + 2x² + x³
+    // 2. Construct q(x) directly from std::array
+    //    q(x) = 5 + 2x² + x³
     // --------------------------------------------------
     constexpr std::array init_q{5, 0, 2, 1, 0};
     Polynomial<5> q{init_q};
 
     std::cout << "q(x) = " << q << "\n\n";
 
-    std::cout << "q capacity    = " << q.capacity() << "\n";
-    std::cout << "actual degree = " << q.degree() << "\n\n";
 
     // --------------------------------------------------
-    // Print coefficients explicitly
+    // 3. Construct r(x) using initializer_list
+    //    r(x) = 7 + 3x + 1x²
     // --------------------------------------------------
-    std::cout << "q(x) coefficients:\n";
-    for (std::size_t i = 0; i <= q.degree(); ++i)
-        std::cout << "  c[" << i << "] = " << q[i] << "\n";
+    Polynomial<5> r{7, 3, 1};
+
+    std::cout << "r(x) = " << r << "\n\n";
 
 
-    std::cout << "\nDone.\n";
+    // --------------------------------------------------
+    // 4. Construct s(x) from a std::vector
+    //    s(x) = 9 + 8x + 7x²
+    // --------------------------------------------------
+    std::vector<int> vec = {9, 8, 7};
+    Polynomial<5> s{vec}; // container constructor
+
+    std::cout << "s(x) = " << s << "\n\n";
+
+
+    // --------------------------------------------------
+    // 5. Construct t(x) as a constant polynomial: t(x) = 42
+    // --------------------------------------------------
+    Polynomial<5> t{42};
+
+    std::cout << "t(x) = " << t << "\n\n";
 
 
     return 0;

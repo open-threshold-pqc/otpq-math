@@ -43,10 +43,10 @@ namespace otpq::math::als::arith {
          * @brief Constructs the ring with the given modulus.
          * @throws std::invalid_argument if `mod <= 0`.
          */
-        ZmodNRing(Elem m)
+        explicit constexpr ZmodNRing(Elem m)
             : mod{m} {
             if (mod <= 0)
-                throw std::invalid_argument("ZmodNRing modulus must be positive");
+                throw std::invalid_argument("[ZmodNRing] modulus must be positive");
         }
 
         /**
@@ -116,13 +116,13 @@ namespace otpq::math::als::arith {
          * @brief Constructs a finite field with prime modulus.
          * @throws std::invalid_argument if modulus ≤ 1 or not prime.
          */
-        ZmodNField(Elem m)
+        explicit constexpr ZmodNField(Elem m)
             : mod{m} {
             if (mod <= 1)
-                throw std::invalid_argument("ZmodNField modulus must be > 1");
+                throw std::invalid_argument("[ZmodNField] modulus must be > 1");
 
             if (!is_prime(mod))
-                throw std::invalid_argument("ZmodNField modulus must be prime");
+                throw std::invalid_argument("[ZmodNField] modulus must be prime");
         }
 
         /**

@@ -1,12 +1,12 @@
 #include <iostream>
-#include <zmod_arithmetic.h>
+#include <otpqmath/zmod_arithmetic.h>
 
 namespace mod = otpq::math::als::arith;
 
 int main() {
     std::cout << "=== ZmodNRing Example (ℤ/nℤ) ===\n";
 
-    const mod::ZmodNRing R7{7};
+    constexpr mod::ZmodNRing R7{7};
 
     std::cout << "modulus = " << R7.mod << "\n";
     std::cout << "3 + 6 = " << R7.add(3, 6) << "   (mod 7)\n";
@@ -17,7 +17,7 @@ int main() {
     std::cout << "\n=== ZmodNField Example (𝔽₇) ===\n";
 
 
-    const mod::ZmodNField F7{7};
+    constexpr mod::ZmodNField F7{7};
 
     std::cout << "modulus = " << F7.mod << "\n";
     std::cout << "3 + 6  = " << F7.add(3, 6) << "\n";

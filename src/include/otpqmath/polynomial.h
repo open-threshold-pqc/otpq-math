@@ -37,35 +37,80 @@ namespace otpq::math::als::polynomial {
     public:
         std::array<CoeffType, N> coeffs{}; ///< coefficient storage
 
-        /// Constructs a zero polynomial.
-        Polynomial() = default;
+        // 1. Default: zero polynomial
+        // ------------------------------------------------------------
+        constexpr Polynomial() = default;
 
-        /// Constructs a polynomial from an array of N coefficients.
-        explicit Polynomial(const std::array<CoeffType, N> &values)
+        // ------------------------------------------------------------
+        // 2. Construct from full array of size N
+        // ------------------------------------------------------------
+        constexpr explicit Polynomial(const std::array<CoeffType, N> &values)
             : coeffs(values) {
+        }
+
+        // ------------------------------------------------------------
+        // 3. Construct from std::span of size N
+        //     (Works with std::array, std::vector, C-arrays, etc.)
+        // ------------------------------------------------------------
+        constexpr explicit Polynomial(std::span<const CoeffType, N> s) {
+            for (std::size_t i = 0; i < N; ++i)
+                coeffs[i] = s[i];
+        }
+
+        // ------------------------------------------------------------
+        // 4. Construct from a container of arbitrary size
+        //    Excess values truncated; missing values = 0
+        // ------------------------------------------------------------
+        template<typename Container>
+            requires (!std::is_same_v<std::decay_t<Container>, Polynomial>)
+        constexpr explicit Polynomial(const Container &c) {
+            std::size_t i = 0;
+            for (auto &&v: c) {
+                if (i >= N) break;
+                coeffs[i++] = static_cast<CoeffType>(v);
+            }
+            // remaining coeffs default-initialized to zero
+        }
+
+        // ------------------------------------------------------------
+        // 5. Construct polynomial from initializer_list
+        //    Example: Polynomial<5>{1, 2, 3} → [1,2,3,0,0]
+        // ------------------------------------------------------------
+        constexpr Polynomial(std::initializer_list<CoeffType> list) {
+            std::size_t i = 0;
+            for (auto &&v: list) {
+                if (i >= N) break;
+                coeffs[i++] = v;
+            }
+        }
+
+        // ------------------------------------------------------------
+        // 6. Construct constant polynomial:  c(x) = scalar
+        // ------------------------------------------------------------
+        constexpr explicit Polynomial(CoeffType constant_value) {
+            coeffs.fill(CoeffType{});
+            coeffs[0] = constant_value;
         }
 
         /**
          * @brief Read operator with dynamic-style bounds.
          *
-         * @return coeff[i] when i < N; otherwise returns 0.
+         * @return coeff[i] when i < N; otherwise throws exception.
          */
-        CoeffType operator[](std::size_t i) const noexcept {
-            if (i < N) return coeffs[i];
-            return CoeffType{};
+        constexpr CoeffType operator[](std::size_t i) const {
+            if (i >= N)
+                throw std::out_of_range("[Polynomial] index out of bounds");
+            return coeffs[i];
         }
 
         /**
          * @brief Write operator. Writes beyond N are ignored.
          *
-         * @return Reference to coeff[i] or a dummy variable if out of bounds.
+         * @return Reference to coeff[i]; otherwise throws exception.
          */
-        CoeffType &operator[](std::size_t i) {
-            if (i >= N) {
-                static CoeffType dummy{};
-                dummy = CoeffType{};
-                return dummy;
-            }
+        constexpr CoeffType &operator[](std::size_t i) {
+            if (i >= N)
+                throw std::out_of_range("[Polynomial] index out of bounds");
             return coeffs[i];
         }
 
@@ -90,10 +135,6 @@ namespace otpq::math::als::polynomial {
             }
             return 0;
         }
-
-
-
-
     };
 
     /**

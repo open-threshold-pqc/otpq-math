@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(OTPQMATH LANGUAGES CXX)
+project(OTPQ-MATH LANGUAGES CXX)
 
 # ============================================================
 # C++23 Standard
@@ -30,18 +30,18 @@ message(STATUS "OTPQ modular integer type = ${OTPQ_ALS_UNDERLYING_TYPE}")
 # ============================================================
 # otpqmath (header-only library)
 # ============================================================
-add_library(otpqmath INTERFACE)
+add_library(libotpqmath INTERFACE)
 
-target_include_directories(otpqmath INTERFACE
+target_include_directories(libotpqmath INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
 )
 
 # Inject macro: OTPQ_ALS_UNDERLYING_TYPE=int or whatever user chooses
-target_compile_definitions(otpqmath INTERFACE
+target_compile_definitions(libotpqmath INTERFACE
         OTPQ_ALS_UNDERLYING_TYPE=${OTPQ_ALS_UNDERLYING_TYPE}
 )
 
-target_link_libraries(otpqmath INTERFACE project_options)
+target_link_libraries(libotpqmath INTERFACE project_options)
 
 # ============================================================
 # Test executable

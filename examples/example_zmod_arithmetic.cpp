@@ -1,5 +1,5 @@
 #include <iostream>
-#include <otpqmath/zmod_arithmetic.h>
+#include <otpqmath/numbers/zmod_arithmetic.h>
 
 namespace mod = otpq::math::als::arith;
 

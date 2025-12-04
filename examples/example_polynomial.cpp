@@ -1,7 +1,7 @@
 #include <iostream>
 #include <array>
 #include <vector>
-#include <otpqmath/polynomial.h>
+#include <otpqmath/poly/polynomial.h>
 
 using otpq::math::als::polynomial::Polynomial;
 

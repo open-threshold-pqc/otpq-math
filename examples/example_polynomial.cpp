@@ -1,6 +1,8 @@
 #include <iostream>
 #include <array>
 #include <vector>
+#include <span>
+
 #include <otpqmath/poly/polynomial.h>
 
 using otpq::math::als::polynomial::Polynomial;
@@ -60,5 +62,37 @@ int main() {
     std::cout << "t(x) = " << t << "\n\n";
 
 
+    // --------------------------------------------------
+    // 6. Demonstrate raw(), unchecked access (e.g., for FFT kernels)
+    // --------------------------------------------------
+    std::cout << "Using raw() to modify p(x):\n";
+    p.raw(2) = -5; // p(x) now has −5x²
+    std::cout << "p(x) after raw write: " << p << "\n\n";
+
+
+    // --------------------------------------------------
+    // 7. Demonstrate data(): direct access to underlying storage
+    // --------------------------------------------------
+    std::cout << "Accessing underlying data() of q:\n";
+    auto &qdata = q.data();
+
+    for (std::size_t i = 0; i < q.capacity(); i++)
+        std::cout << "  q[" << i << "] = " << qdata[i] << "\n";
+
+    std::cout << "\n";
+
+
+    // --------------------------------------------------
+    // 8. Demonstrate constructing from a span
+    // --------------------------------------------------
+    std::array<int, 5> span_src{1, 2, 3, 4, 5};
+    std::span<const int, 5> span_view{span_src};
+
+    Polynomial<5> u{span_view};
+
+    std::cout << "u(x) constructed from std::span = " << u << "\n\n";
+
+
+    std::cout << "=== End of Demonstration ===\n";
     return 0;
 }

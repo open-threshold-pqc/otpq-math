@@ -5,9 +5,8 @@
 #include <vector>
 #include <span>
 
-#include <otpqmath/numbers/zmod_arithmetic.h>
+#include <otpqmath/algebra/als.h>
 #include <otpqmath/poly/polynomial.h>
-#include <otpqmath/als.h>
 
 namespace otpq::math::als::polynomial {
     /**
@@ -128,7 +127,7 @@ namespace otpq::math::als::polynomial {
         std::size_t N,
         typename PolyMod = NoPolyModulus<N>,
         typename CoeffType = OTPQ_ALS_UNDERLYING_TYPE,
-        typename Als = arith::ZmodNField<CoeffType> >
+        typename Als = field::PrimeField<CoeffType> >
         requires core::Field<Als, CoeffType>
     class PolynomialField : public Polynomial<N, CoeffType> {
     public:
@@ -151,7 +150,7 @@ namespace otpq::math::als::polynomial {
          */
         constexpr explicit PolynomialField(const Als &a,
                                            const PolyMod &m = PolyMod())
-            : Base(), alg(a), mod(m) {
+            : Base(), als_(a), polyModulus_(m) {
         }
 
         /**
@@ -164,7 +163,7 @@ namespace otpq::math::als::polynomial {
         constexpr explicit PolynomialField(const std::array<CoeffType, N> &arr,
                                            const Als &a,
                                            const PolyMod &m = PolyMod())
-            : Base(arr), alg(a), mod(m) {
+            : Base(arr), als_(a), polyModulus_(m) {
             reduce();
         }
 
@@ -178,7 +177,7 @@ namespace otpq::math::als::polynomial {
         constexpr explicit PolynomialField(std::span<const CoeffType, N> s,
                                            const Als &a,
                                            const PolyMod &m = PolyMod())
-            : Base(s), alg(a), mod(m) {
+            : Base(s), als_(a), polyModulus_(m) {
             reduce();
         }
 
@@ -192,7 +191,7 @@ namespace otpq::math::als::polynomial {
         constexpr explicit PolynomialField(std::initializer_list<CoeffType> list,
                                            const Als &a,
                                            const PolyMod &m = PolyMod())
-            : Base(list), alg(a), mod(m) {
+            : Base(list), als_(a), polyModulus_(m) {
             reduce();
         }
 
@@ -206,7 +205,7 @@ namespace otpq::math::als::polynomial {
         constexpr explicit PolynomialField(CoeffType constant_value,
                                            const Als &a,
                                            const PolyMod &m = PolyMod())
-            : Base(constant_value), alg(a), mod(m) {
+            : Base(constant_value), als_(a), polyModulus_(m) {
             reduce();
         }
 
@@ -222,7 +221,7 @@ namespace otpq::math::als::polynomial {
         constexpr explicit PolynomialField(const Container &c,
                                            const Als &a,
                                            const PolyMod &m = PolyMod())
-            : Base(), alg(a), mod(m) {
+            : Base(), als_(a), polyModulus_(m) {
             std::size_t i = 0;
 
             for (auto &&v: c) {
@@ -235,15 +234,15 @@ namespace otpq::math::als::polynomial {
         /**
          * @brief Returns the coefficient algebra used by this polynomial.
          */
-        [[nodiscard]] constexpr const Als& algebra() const noexcept {
-            return alg;
+        [[nodiscard]] constexpr const Als &algebra() const noexcept {
+            return als_;
         }
 
         /**
          * @brief Returns the polynomial modulus reduction policy.
          */
-        [[nodiscard]] constexpr const PolyMod& modulus() const noexcept {
-            return mod;
+        [[nodiscard]] constexpr const PolyMod &modulus() const noexcept {
+            return polyModulus_;
         }
 
         /**
@@ -253,7 +252,7 @@ namespace otpq::math::als::polynomial {
          * in the coefficient algebra.
          */
         [[nodiscard]] constexpr bool is_zero() const {
-            return this->degree() == 0 && alg.is_zero(coeffs_[0]);
+            return this->degree() == 0 && als_.is_zero(coeffs_[0]);
         }
 
         /**
@@ -265,9 +264,9 @@ namespace otpq::math::als::polynomial {
          */
         friend constexpr PolynomialField
         operator+(const PolynomialField &a, const PolynomialField &b) {
-            PolynomialField r(a.alg, a.mod);
+            PolynomialField r(a.algebra(), a.modulus());
             for (std::size_t i = 0; i < N; ++i)
-                r.coeffs_[i] = a.alg.add(a.coeffs_[i], b.coeffs_[i]);
+                r.coeffs_[i] = a.als_.add(a.coeffs_[i], b.coeffs_[i]);
             r.reduce();
             return r;
         }
@@ -281,9 +280,9 @@ namespace otpq::math::als::polynomial {
          */
         friend constexpr PolynomialField
         operator-(const PolynomialField &a, const PolynomialField &b) {
-            PolynomialField r(a.alg, a.mod);
+            PolynomialField r(a.als_, a.polyModulus_);
             for (std::size_t i = 0; i < N; ++i)
-                r.coeffs_[i] = a.alg.sub(a.coeffs_[i], b.coeffs_[i]);
+                r.coeffs_[i] = a.als_.sub(a.coeffs_[i], b.coeffs_[i]);
             r.reduce();
             return r;
         }
@@ -304,25 +303,25 @@ namespace otpq::math::als::polynomial {
             const std::size_t da = a.degree();
             const std::size_t db = b.degree();
 
-            std::vector<CoeffType> tmp(da + db + 1, a.alg.zero());
+            std::vector<CoeffType> tmp(da + db + 1, a.als_.zero());
 
             for (std::size_t i = 0; i <= da; ++i)
                 for (std::size_t j = 0; j <= db; ++j)
-                    tmp[i + j] = a.alg.add(tmp[i + j],
-                                           a.alg.mul(a.coeffs_[i], b.coeffs_[j]));
+                    tmp[i + j] = a.als_.add(tmp[i + j],
+                                            a.als_.mul(a.coeffs_[i], b.coeffs_[j]));
 
-            auto reduced = a.mod.reduce(tmp, a.alg);
-            return PolynomialField(reduced, a.alg, a.mod);
+            auto reduced = a.modulus().reduce(tmp, a.als_);
+            return PolynomialField(reduced, a.als_, a.polyModulus_);
         }
 
     private:
-        Als alg; /**< Coefficient algebra (field or ring). */
-        PolyMod mod; /**< Polynomial modulus reduction policy. */
+        Als als_; /**< Coefficient algebra (field or ring). */
+        PolyMod polyModulus_; /**< Polynomial modulus reduction policy. */
 
         /**
          * @brief Applies polynomial modulus reduction to the coefficient array.
          */
-        constexpr void reduce() { mod.reduce(coeffs_, alg); }
+        constexpr void reduce() { polyModulus_.reduce(coeffs_, als_); }
     };
 
     /**
@@ -330,7 +329,7 @@ namespace otpq::math::als::polynomial {
      */
     template<std::size_t N,
         typename CoeffType = OTPQ_ALS_UNDERLYING_TYPE,
-        typename Als = arith::ZmodNField<CoeffType> >
+        typename Als = field::PrimeField<CoeffType> >
     using PolynomialFieldCyclotomic =
     PolynomialField<N, CyclotomicPolyModulus<N>, CoeffType, Als>;
 }

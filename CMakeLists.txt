@@ -27,6 +27,17 @@ set(OTPQ_ALS_UNDERLYING_TYPE "int" CACHE STRING
 
 message(STATUS "OTPQ modular integer type = ${OTPQ_ALS_UNDERLYING_TYPE}")
 
+
+
+option(OTPQ_SEC_MEMORY_BOUND "Enable secure memory bound checking" OFF)
+
+message(STATUS "OTPQ secure memory bound = ${OTPQ_SEC_MEMORY_BOUND}")
+
+if(OTPQ_SEC_MEMORY_BOUND)
+    add_compile_definitions(OTPQ_SEC_MEMORY_BOUND)
+endif()
+
+
 # ============================================================
 # otpqmath (header-only library)
 # ============================================================

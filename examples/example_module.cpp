@@ -4,16 +4,17 @@
 #include <otpqmath/numbers/zmod_arithmetic.h>
 #include <otpqmath/poly/module.h>
 
-using otpq::math::als::arith::ZmodNField;
+using otpq::math::als::field::PrimeField;
 using otpq::math::als::module::PolynomialFieldVector;
 using otpq::math::als::module::PolynomialFieldMatrix;
+using otpq::math::als::polynomial::PolynomialFieldCyclotomic;
 
 int main() {
     constexpr std::size_t N = 4;
     constexpr std::size_t K = 2;
     constexpr std::size_t L = 3;
 
-    constexpr ZmodNField<> F17{17};
+    constexpr PrimeField<> F17{17};
 
     // -----------------------------------------------------------
     // 1. Create vector v ∈ R^K from explicit coefficients
@@ -107,6 +108,15 @@ int main() {
     std::cout << "w : " << w << "\n";
     std::cout << "A : " << A << "\n";
     std::cout << "Aw : " << A * w << "\n";
+
+
+
+    const std::vector<int> coeff_c = {
+        {4, 3, 2, 1}
+    };
+    PolynomialFieldCyclotomic<N> c{coeff_c, F17};
+
+    std::cout << "cw: " << c * w << "\n\n";
 
     return 0;
 }

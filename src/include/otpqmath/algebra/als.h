@@ -49,22 +49,22 @@ namespace otpq::math::als::core {
         { ring.zero() } -> std::same_as<Elem>;
     };
 
-
     /**
-     * @brief Concept representing a mathematical field over element type Elem.
+     * @brief Concept representing a mathematical Field over type Elem.
      *
-     * A Field extends Ring by requiring multiplicative identity, division,
-     * and inversion:
+     * A Field extends Ring by requiring:
      *
-     *   - one()    → multiplicative identity
-     *   - inv(a)   → multiplicative inverse (a ≠ 0)
-     *   - div(a,b) → a / b
+     *   one()    → multiplicative identity
+     *   inv(a)   → multiplicative inverse (a ≠ 0)
+     *   div(a,b) → a / b
      *
-     * Fields model the algebraic notion of a commutative field such as ℚ,
-     * ℝ, or finite fields ℤ/pℤ (with p prime).
+     * This concept is satisfied by:
+     *   - ℤ/pℤ for prime p (ZmodNField)
+     *   - ℝ, ℚ (if someone implements)
+     *   - ℂ (ComplexAls)
      *
-     * Implementations must document the behavior of inv(a) when a = 0,
-     * as this is undefined in general.
+     * Any valid ALS for a Field must document the behavior of inv(a)
+     * when a == 0 (undefined in general).
      */
     template<typename F, typename Elem>
     concept Field = Ring<F, Elem> && requires(const F &fld, Elem a, Elem b)
@@ -74,3 +74,12 @@ namespace otpq::math::als::core {
         { fld.one() } -> std::same_as<Elem>;
     };
 }
+
+// //todo to be thought
+// if constexpr (Als::supports_simd) {
+//     simd_add(r.coeffs_, a.coeffs_, b.coeffs_, als_.q());
+// } else {
+//     // fallback
+//     for (i...)
+//         r[i] = als_.add(a[i], b[i]);
+// }

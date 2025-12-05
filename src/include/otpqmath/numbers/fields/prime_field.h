@@ -13,85 +13,12 @@
  * throughout OTPQ-Math for polynomial arithmetic and number theory.
  *
  * Included structures:
- *   - ZmodNRing:  additive/multiplicative ring ℤ/nℤ
- *   - ZmodNField: finite field 𝔽ₙ for prime n
- *
+ *   - ModRing:  additive/multiplicative ring ℤ/nℤ
+ *   - PrimeField: finite field 𝔽ₙ for prime n
+ *   - ComplexField: field of complex numbers
  */
 
-namespace otpq::math::als::arith {
-    /**
-     * @brief Ring of integers modulo `mod` (ℤ / modℤ).
-     *
-     * This type models the Ring concept for any integral element type.
-     * It supports modular addition, subtraction, multiplication, and
-     * negation. Division and multiplicative inverses are *not* provided,
-     * since the modulus is not required to be prime.
-     *
-     * Example:
-     * @code
-     *   ZmodNRing<int> R{7};   // or simply: ZmodNRing<> R{7}
-     *   R.add(3, 6);   // → 2
-     *   R.mul(4, 5);   // → 6
-     * @endcode
-     */
-    template<std::integral Elem = OTPQ_ALS_UNDERLYING_TYPE>
-    struct ZmodNRing {
-        /// @brief The modulus defining ℤ/modℤ.
-        Elem mod{};
-
-        /**
-         * @brief Constructs the ring with the given modulus.
-         * @throws std::invalid_argument if `mod <= 0`.
-         */
-        explicit constexpr ZmodNRing(Elem m)
-            : mod{m} {
-            if (mod <= 0)
-                throw std::invalid_argument("[ZmodNRing] modulus must be positive");
-        }
-
-        /**
-         * @brief Reduces an integer into canonical representative `[0, mod)`.
-         */
-        [[nodiscard]] constexpr Elem normalize(Elem x) const noexcept {
-            x %= mod;
-            if (x < 0) x += mod;
-            return x;
-        }
-
-        /// @brief Additive identity (0 mod n).
-        [[nodiscard]] constexpr Elem zero() const noexcept { return Elem{0}; }
-
-        /// @brief Additive inverse (-a mod n).
-        [[nodiscard]] constexpr Elem neg(Elem a) const noexcept {
-            return normalize(-a);
-        }
-
-        /// @brief Addition modulo n.
-        [[nodiscard]] constexpr Elem add(Elem a, Elem b) const noexcept {
-            return normalize(a + b);
-        }
-
-        /// @brief Subtraction modulo n.
-        [[nodiscard]] constexpr Elem sub(Elem a, Elem b) const noexcept {
-            return normalize(a - b);
-        }
-
-        /**
-         * @brief Multiplication modulo n.
-         *
-         * Uses a wider intermediate type to avoid overflow when possible.
-         */
-        [[nodiscard]] constexpr Elem mul(Elem a, Elem b) const noexcept {
-            using Wide =
-                    std::conditional_t<(sizeof(Elem) < sizeof(long long)),
-                        long long,
-                        __int128_t>;
-
-            Wide r = static_cast<Wide>(a) * static_cast<Wide>(b);
-            return normalize(static_cast<Elem>(r % mod));
-        }
-    };
-
+namespace otpq::math::als::field {
     /**
      * @brief Finite field of integers modulo prime `mod` (𝔽_mod).
      *
@@ -101,14 +28,14 @@ namespace otpq::math::als::arith {
      *
      * Example:
      * @code
-     *   ZmodNField<int> F7{7};   // or simply:   ZmodNField<> F7{7}
+     *   PrimeField<int> F7{7};   // or simply:   PrimeField<> F7{7}
      *   F7.add(3, 6);   // → 2
      *   F7.mul(4, 5);   // → 6
      *   F7.div(3, 4);   // → 5  (since 4^{-1} = 2 mod 7, and 3*2 = 6 ≡ 6)
      * @endcode
      */
     template<std::integral Elem = OTPQ_ALS_UNDERLYING_TYPE>
-    struct ZmodNField {
+    struct PrimeField {
         /// @brief Prime modulus defining the finite field 𝔽ₘₒd.
         Elem mod{};
 
@@ -116,13 +43,13 @@ namespace otpq::math::als::arith {
          * @brief Constructs a finite field with prime modulus.
          * @throws std::invalid_argument if modulus ≤ 1 or not prime.
          */
-        explicit constexpr ZmodNField(Elem m)
+        explicit constexpr PrimeField(Elem m)
             : mod{m} {
             if (mod <= 1)
-                throw std::invalid_argument("[ZmodNField] modulus must be > 1");
+                throw std::invalid_argument("[PrimeField] modulus must be > 1");
 
             if (!is_prime(mod))
-                throw std::invalid_argument("[ZmodNField] modulus must be prime");
+                throw std::invalid_argument("[PrimeField] modulus must be prime");
         }
 
         /**
@@ -131,7 +58,7 @@ namespace otpq::math::als::arith {
          * A deterministic, small-range primality test suitable
          * for typical modular arithmetic parameters.
          */
-        static constexpr bool is_prime(Elem n) noexcept {
+        static constexpr bool is_prime(Elem n) noexcept {   //todo put in utils
             if (n <= 1) return false;
             if (n <= 3) return true;
             if (n % 2 == 0 || n % 3 == 0) return false;
@@ -210,7 +137,7 @@ namespace otpq::math::als::arith {
             }
 
             if (r > 1)
-                throw std::runtime_error("ZmodNField: element not invertible");
+                throw std::runtime_error("PrimeField: element not invertible");
 
             if (t < 0)
                 t += mod;

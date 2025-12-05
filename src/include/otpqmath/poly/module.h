@@ -3,7 +3,7 @@
 #include <vector>
 #include <cstddef>
 
-#include <otpqmath/poly/polynomial_fields.h>
+#include <fields/polynomial_fields.h>
 
 namespace otpq::math::als::module {
     /**
@@ -29,7 +29,7 @@ namespace otpq::math::als::module {
         std::size_t N,
         typename PolyMod = polynomial::CyclotomicPolyModulus<N>,
         typename CoeffType = OTPQ_ALS_UNDERLYING_TYPE,
-        typename Als = arith::ZmodNField<CoeffType> >
+        typename Als = field::PrimeField<CoeffType> >
         requires core::Field<Als, CoeffType>
     class PolynomialFieldVector {
     public:
@@ -193,31 +193,6 @@ namespace otpq::math::als::module {
             return r;
         }
 
-        // /**
-        //  * @brief Scalar multiplication by a polynomial:  y = a * v
-        //  *
-        //  * Multiplies each component of v by the scalar polynomial a.
-        //  */
-        // friend PolynomialFieldVector operator*(const Poly &a,
-        //                                        const PolynomialFieldVector &v) {
-        //     PolynomialFieldVector r(a.algebra(), a.modulus());
-        //
-        //     for (std::size_t i = 0; i < K; ++i)
-        //         r[i] = a * v[i];
-        //
-        //     return r;
-        // }
-        //
-        // /**
-        //  * @brief Scalar multiplication by a polynomial:  y = v * a
-        //  *
-        //  * Multiplies each component of v by the scalar polynomial a.
-        //  */
-        // friend PolynomialFieldVector operator*(const PolynomialFieldVector &v,
-        //                                        const Poly &a) {
-        //     return a * v;
-        // }
-
     private:
         /**
          * @brief Underlying storage for the K component polynomials.
@@ -352,7 +327,7 @@ namespace otpq::math::als::module {
         std::size_t N,
         typename PolyMod = polynomial::CyclotomicPolyModulus<N>,
         typename CoeffType = OTPQ_ALS_UNDERLYING_TYPE,
-        typename Als = arith::ZmodNField<CoeffType> >
+        typename Als = field::PrimeField<CoeffType> >
         requires core::Field<Als, CoeffType>
     class PolynomialFieldMatrix {
     public:

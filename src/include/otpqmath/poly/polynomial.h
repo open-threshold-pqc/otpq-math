@@ -32,7 +32,7 @@ namespace otpq::math::als::polynomial {
      * @tparam N         Maximum number of coefficients
      * @tparam CoeffType Scalar coefficient type
      */
-    template<std::size_t N, typename CoeffType = OTPQ_ALS_UNDERLYING_TYPE>
+    template<std::size_t N, std::integral CoeffType = OTPQ_ALS_UNDERLYING_TYPE>
     class Polynomial {
     public:
         /**
@@ -151,8 +151,7 @@ namespace otpq::math::als::polynomial {
          *
          * @throws std::out_of_range if i ≥ N.
          */
-        [[nodiscard]]
-        constexpr CoeffType operator[](std::size_t i) const {
+        constexpr const CoeffType &operator[](std::size_t i) const {
             if (i >= N)
                 throw std::out_of_range("[Polynomial] index out of bounds");
             return coeffs_[i];
@@ -166,11 +165,54 @@ namespace otpq::math::als::polynomial {
          *
          * @throws std::out_of_range if i ≥ N.
          */
+        [[nodiscard]]
         constexpr CoeffType &operator[](std::size_t i) {
             if (i >= N)
                 throw std::out_of_range("[Polynomial] index out of bounds");
             return coeffs_[i];
         }
+
+        /**
+         * @brief Returns a direct, unchecked reference to the i-th coefficient.
+         *
+         * This function performs **no bounds checking** and is intended for
+         * performance-critical routines such as NTT/FFT kernels or SIMD loops
+         * where index validity is guaranteed externally.
+         *
+         * @param i  Coefficient index (must satisfy 0 ≤ i < N).
+         * @return   Reference to coeffs_[i] (unchecked).
+         */
+        constexpr CoeffType &raw(std::size_t i) noexcept { return coeffs_[i]; }
+
+        /**
+         * @brief Returns a direct, unchecked reference to the i-th coefficient
+         *        (const overload).
+         *
+         * See the non-const overload for details.
+         */
+        constexpr const CoeffType &raw(std::size_t i) const noexcept { return coeffs_[i]; }
+
+
+        /**
+         * @brief Provides direct access to the underlying coefficient array.
+         *
+         * Useful for:
+         *   • passing coefficients to NTT/FFT routines,
+         *   • SIMD/vectorized operations,
+         *   • interoperability with low-level C APIs.
+         *
+         * This returns the internal std::array<N> by reference; no copy occurs.
+         *
+         * @return Reference to the underlying coefficient storage.
+         */
+        constexpr auto &data() noexcept { return coeffs_; }
+
+        /**
+         * @brief Const-qualified access to the underlying coefficient array.
+         *
+         * See the non-const overload for details.
+         */
+        constexpr const auto &data() const noexcept { return coeffs_; }
 
         /**
          * @brief Returns the static coefficient capacity N.
@@ -179,9 +221,7 @@ namespace otpq::math::als::polynomial {
          *
          * @return N.
          */
-        [[nodiscard]] constexpr std::size_t capacity() const noexcept {
-            return N;
-        }
+        [[nodiscard]] constexpr std::size_t capacity() const noexcept { return N; }
 
         /**
          * @brief Returns the polynomial's algebraic degree.
@@ -192,10 +232,9 @@ namespace otpq::math::als::polynomial {
          * @return Degree index, or 0 if polynomial is identically zero.
          */
         [[nodiscard]] std::size_t degree() const noexcept {
-            for (std::size_t i = N; i-- > 0;) {
+            for (std::size_t i = N; i-- > 0;)
                 if (coeffs_[i] != CoeffType{})
                     return i;
-            }
             return 0;
         }
 

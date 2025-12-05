@@ -2,17 +2,17 @@
 #include <array>
 #include <vector>
 
-#include <otpqmath/numbers/zmod_arithmetic.h>
-#include <otpqmath/poly/polynomial_fields.h>
+#include <otpqmath/numbers/fields/prime_field.h>
+#include <otpqmath/poly/fields/polynomial_field.h>
 
-using otpq::math::als::arith::ZmodNField;
+using otpq::math::als::field::PrimeField;
 using otpq::math::als::polynomial::PolynomialField;
 using otpq::math::als::polynomial::PolynomialFieldCyclotomic;
 
 int main() {
     constexpr std::size_t N = 8;
 
-    using Field = ZmodNField<int>;
+    using Field = PrimeField<int>;
     using Poly = PolynomialFieldCyclotomic<N>;
 
     constexpr Field F7{7};
@@ -66,9 +66,8 @@ int main() {
     std::cout << "f(x) = " << f << "\n";
 
     std::cout << "\n ---------------- \n";
-    std::cout << "d(x) + e(x) = " << d + e << "\n";
+    std::cout << "d(x) + e(x) = " << d - e << "\n";
     std::cout << "b(x) * c(x) = " << b * c << "\n";
-
 
     return 0;
 }

@@ -3,9 +3,9 @@
 #include <vector>
 #include <span>
 
-#include <otpqmath/poly/polynomial.h>
+#include <otpqmath/als/rings/poly/polynomial.h>
 
-using otpq::math::als::polynomial::Polynomial;
+using otpq::math::als::poly::polynomial::Polynomial;
 
 int main() {
     std::cout << "=== Polynomial Demonstration ===\n\n";

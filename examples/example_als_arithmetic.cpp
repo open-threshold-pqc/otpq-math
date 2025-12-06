@@ -1,15 +1,18 @@
 #include <iostream>
 #include <complex>
 
-#include <../src/include/otpqmath/als.h>
+#include <otpqmath/als/rings/numbers/mod_ring.h>
+#include <otpqmath/als/fields/numbers/prime_field.h>
+#include <otpqmath/als/fields/numbers/complex_field.h>
 
-namespace ring  = otpq::math::als::ring;
-namespace field = otpq::math::als::field;
+using otpq::math::als::numbers::ring::ModRing;
+using otpq::math::als::numbers::field::PrimeField;
+using otpq::math::als::numbers::field::ComplexField;
 
 int main() {
     std::cout << "=== ModRing Example  (ℤ/nℤ) ===\n";
 
-    constexpr ring::ModRing<int> R7{7};
+    constexpr ModRing<int> R7{7};
 
     std::cout << "modulus = " << R7.mod << "\n";
     std::cout << "3 + 6 = " << R7.add(3, 6) << "   (mod 7)\n";
@@ -23,7 +26,7 @@ int main() {
     // ----------------------------------------------------------------------
     std::cout << "\n=== PrimeField Example (𝔽₇) ===\n";
 
-    constexpr field::PrimeField<int> F7{7};
+    constexpr PrimeField<int> F7{7};
 
     std::cout << "modulus = " << F7.mod << "\n";
     std::cout << "3 + 6  = "  << F7.add(3, 6) << "\n";
@@ -41,7 +44,7 @@ int main() {
     // ----------------------------------------------------------------------
     std::cout << "\n=== ComplexField Example (ℂ) ===\n";
 
-    field::ComplexField<double> C;
+    ComplexField<double> C;
 
     std::complex<double> a{1.0, 2.0};
     std::complex<double> b{3.0, -1.0};

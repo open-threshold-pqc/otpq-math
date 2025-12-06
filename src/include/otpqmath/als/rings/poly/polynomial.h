@@ -18,7 +18,7 @@
  *     arithmetic delegated to an algebraic structure (e.g., ZmodNField)
  *
  */
-namespace otpq::math::als::polynomial {
+namespace otpq::math::als::rings::polynomial {
     /**
      * @brief Fixed-size polynomial with coefficient array of length N.
      *

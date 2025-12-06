@@ -3,12 +3,12 @@
 #include <vector>
 #include <format>
 
-#include <otpqmath/numbers/fields/prime_field.h>
-#include <otpqmath/poly/rings/polynomial_ring.h>
+#include <otpqmath/als/fields/numbers/prime_field.h>
+#include <otpqmath/als/rings/poly/polynomial_ring.h>
 
-using otpq::math::als::field::PrimeField;
-using otpq::math::als::polynomial::PolynomialRing;
-using otpq::math::als::polynomial::PolynomialCyclotomicRing;
+using otpq::math::als::numbers::field::PrimeField;
+using otpq::math::als::rings::polynomial::PolynomialRing;
+using otpq::math::als::rings::polynomial::PolynomialCyclotomicRing;
 
 int main() {
     constexpr std::size_t N = 8;

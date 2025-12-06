@@ -18,7 +18,7 @@
  *   - ComplexField: field of complex numbers
  */
 
-namespace otpq::math::als::field {
+namespace otpq::math::als::numbers::field {
     /**
      * @brief Finite field of integers modulo prime `mod` (𝔽_mod).
      *

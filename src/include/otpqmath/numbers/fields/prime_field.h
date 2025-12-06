@@ -70,6 +70,15 @@ namespace otpq::math::als::field {
             return true;
         }
 
+        /**
+         * @brief Returns a unique algebra identifier.
+         *
+         * Since the modulus fully determines the algebra ℤ / modℤ,
+         * this returns the modulus encoded as Elem.
+         */
+        [[nodiscard]] constexpr Elem id() const noexcept { return mod; }
+
+
         /// @brief Reduces an integer into canonical representative `[0, mod)`.
         [[nodiscard]] constexpr Elem normalize(Elem x) const noexcept {
             x %= mod;

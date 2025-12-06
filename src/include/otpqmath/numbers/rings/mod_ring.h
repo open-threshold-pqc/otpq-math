@@ -49,6 +49,16 @@ namespace otpq::math::als::ring {
                 throw std::invalid_argument("[ModRing] modulus must be positive");
         }
 
+
+        /**
+         * @brief Returns a unique algebra identifier.
+         *
+         * Since the modulus fully determines the algebra ℤ / modℤ,
+         * this returns the modulus encoded as Elem.
+         */
+        [[nodiscard]] constexpr Elem id() const noexcept { return mod; }
+
+
         /**
          * @brief Reduces an integer into canonical representative `[0, mod)`.
          */

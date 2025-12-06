@@ -33,21 +33,38 @@ namespace otpq::math::als::core {
      *   - mul(a, b) → a * b
      *   - neg(a)    → -a
      *   - zero()    → additive identity
+     *   - normalize(x)   → canonical coefficient reduction (e.g., modular normalization)
      *
-     * All operations must return Elem.
+     * Additionally, every algebraic ring must provide a unique identifier:
+     *
+     *   - id()           → a runtime identifier describing the algebra instance
+     *
+     * The identifier **uniquely distinguishes algebraic structures**, and is used
+     * to ensure compatibility when performing polynomial-ring operations. For
+     * modular rings such as ℤ_q, id() will typically encode or hash the modulus q.
+     * For parameter-free rings (e.g., ℝ, ℂ), id() may return a fixed constant
+     * representing that algebra.
+     *
+     * Two ring instances R₁ and R₂ are considered compatible iff:
+     *
+     *        R₁.id() == R₂.id()
      *
      * This concept specifies the interface only; it does not enforce
      * algebraic laws such as associativity or distributivity.
      */
     template<typename R, typename Elem>
-    concept Ring = requires(const R &ring, Elem a, Elem b)
-    {
-        { ring.add(a, b) } -> std::same_as<Elem>;
-        { ring.sub(a, b) } -> std::same_as<Elem>;
-        { ring.mul(a, b) } -> std::same_as<Elem>;
-        { ring.neg(a) } -> std::same_as<Elem>;
-        { ring.zero() } -> std::same_as<Elem>;
-    };
+    concept Ring =
+            std::equality_comparable<Elem> &&
+            requires(const R &ring, Elem a, Elem b)
+            {
+                { ring.add(a, b) } -> std::same_as<Elem>;
+                { ring.sub(a, b) } -> std::same_as<Elem>;
+                { ring.mul(a, b) } -> std::same_as<Elem>;
+                { ring.neg(a) } -> std::same_as<Elem>;
+                { ring.zero() } -> std::same_as<Elem>;
+                { ring.normalize(a) } -> std::same_as<Elem>; // Maybe a no-op
+                { ring.id() } -> std::same_as<Elem>;
+            };
 
     /**
      * @brief Concept representing a mathematical Field over type Elem.
@@ -73,6 +90,15 @@ namespace otpq::math::als::core {
         { fld.div(a, b) } -> std::same_as<Elem>;
         { fld.one() } -> std::same_as<Elem>;
     };
+
+
+    /**
+     * @brief Concept: ANY algebraic structure is either Field or Ring
+    *
+    */
+    template<typename Als, typename Elem>
+    concept AlgebraicStructure =
+            Ring<Als, Elem> || Field<Als, Elem>;
 }
 
 // //todo to be thought

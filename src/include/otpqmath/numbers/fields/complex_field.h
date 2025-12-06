@@ -20,42 +20,45 @@
 
 namespace otpq::math::als::field {
     /**
- * @brief Algebraic structure for complex-number arithmetic (ℂ).
- *
- * This ALS implements the `Field` concept over the element type:
- *
- *      Elem = std::complex<Real>
- *
- * It provides:
- *   - addition, subtraction, negation
- *   - multiplication, division
- *   - additive identity (0)
- *   - multiplicative identity (1)
- *   - multiplicative inverse (1/a)
- *
- * This field is essential for algorithms operating in the Fourier domain,
- * such as:
- *   - FFT-based polynomial multiplication
- *   - Falcon’s recursive FFT splitting (complex 1024-point FFT)
- *   - GPV sampling over ℤⁿ using Gram–Schmidt represented in ℂ
- *
- * Unlike modular arithmetic, ℂ is a true mathematical field:
- *
- *      ∀ a ≠ 0,  ∃ a⁻¹  such that  a · a⁻¹ = 1
- *
- * Therefore it satisfies your `core::Field` concept without modification.
- *
- * @tparam Real  The underlying real type for complex components.
- *               Typically `double` (for FFT precision).
- */
+     * @brief Algebraic structure for complex-number arithmetic (ℂ).
+     *
+     * This ALS implements the `Field` concept over the element type:
+     *
+     *      Elem = std::complex<Real>
+     *
+     * It provides:
+     *   - addition, subtraction, negation
+     *   - multiplication, division
+     *   - additive identity (0)
+     *   - multiplicative identity (1)
+     *   - multiplicative inverse (1/a)
+     *
+     * This field is essential for algorithms operating in the Fourier domain,
+     * such as:
+     *   - FFT-based polynomial multiplication
+     *   - Falcon’s recursive FFT splitting (complex 1024-point FFT)
+     *   - GPV sampling over ℤⁿ using Gram–Schmidt represented in ℂ
+     *
+     * Unlike modular arithmetic, ℂ is a true mathematical field:
+     *
+     *      ∀ a ≠ 0,  ∃ a⁻¹  such that  a · a⁻¹ = 1
+     *
+     * Therefore it satisfies your `core::Field` concept without modification.
+     *
+     * @tparam Real  The underlying real type for complex components.
+     *               Typically `double` (for FFT precision).
+     */
     template<typename Real = double>
     struct ComplexField {
         /// @brief Complex field element type.
         using Elem = std::complex<Real>;
 
-        // -------------------------------------------------------------------------
-        // Additive and multiplicative identities
-        // -------------------------------------------------------------------------
+        /**
+         * @brief Returns a unique algebra identifier.
+         *
+         * Since the modulus fully determines the algebra of complex numbers.
+         */
+        [[nodiscard]] constexpr Elem id() const noexcept { return Elem{0}; }
 
         /**
          * @brief Returns additive identity 0 + 0i.

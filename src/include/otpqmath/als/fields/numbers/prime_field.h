@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <concepts>
 #include <stdexcept>
+#include <otpqmath/utils/math_utils.h>
 
 /**
  * @brief Integer rings and finite fields modulo `n`.
@@ -48,26 +49,8 @@ namespace otpq::math::als::numbers::field {
             if (mod <= 1)
                 throw std::invalid_argument("[PrimeField] modulus must be > 1");
 
-            if (!is_prime(mod))
+            if (!utils::math::is_prime(mod))
                 throw std::invalid_argument("[PrimeField] modulus must be prime");
-        }
-
-        /**
-         * @brief Compile-time primality check.
-         *
-         * A deterministic, small-range primality test suitable
-         * for typical modular arithmetic parameters.
-         */
-        static constexpr bool is_prime(Elem n) noexcept {   //todo put in utils
-            if (n <= 1) return false;
-            if (n <= 3) return true;
-            if (n % 2 == 0 || n % 3 == 0) return false;
-
-            for (Elem i = 5; i * i <= n; i += 6)
-                if (n % i == 0 || n % (i + 2) == 0)
-                    return false;
-
-            return true;
         }
 
         /**

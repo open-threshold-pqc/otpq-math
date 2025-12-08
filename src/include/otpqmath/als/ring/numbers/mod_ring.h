@@ -18,7 +18,7 @@
  *   - ComplexField: field of complex numbers
  */
 
-namespace otpq::math::als::numbers::ring {
+namespace otpq::math::als::ring::numbers {
     /**
      * @brief Ring of integers modulo `mod` (ℤ / modℤ).
      *

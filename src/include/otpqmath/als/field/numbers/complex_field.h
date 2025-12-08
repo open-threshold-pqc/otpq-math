@@ -18,7 +18,7 @@
  *   - ComplexField: field of complex numbers
  */
 
-namespace otpq::math::als::numbers::field {
+namespace otpq::math::als::field::number {
     /**
      * @brief Algebraic structure for complex-number arithmetic (ℂ).
      *

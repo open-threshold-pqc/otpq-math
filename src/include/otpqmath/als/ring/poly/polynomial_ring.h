@@ -7,9 +7,9 @@
 #include <algorithm>
 
 #include <otpqmath/als/concepts.h>
-#include <otpqmath/als/rings/poly/polynomial.h>
+#include <otpqmath/als/ring/poly/polynomial.h>
 
-namespace otpq::math::als::rings::polynomial {
+namespace otpq::math::als::ring::polynomial {
     /**
      * @brief Reduction modulo (xⁿ + 1).
      *
@@ -146,7 +146,7 @@ namespace otpq::math::als::rings::polynomial {
 }
 
 
-namespace otpq::math::als::rings::polynomial {
+namespace otpq::math::als::ring::polynomial {
     /**
      * @class PolynomialRing
      * @brief Polynomial element of the quotient ring
@@ -178,7 +178,7 @@ namespace otpq::math::als::rings::polynomial {
         std::size_t N,
         typename PolyModulusPolicy = NoPolyModulus<N>,
         typename CoeffType = OTPQ_ALS_UNDERLYING_TYPE,
-        typename CoeffAls = numbers::field::PrimeField<CoeffType> >
+        typename CoeffAls = field::number::PrimeField<CoeffType> >
         requires core::AlgebraicStructure<CoeffAls, CoeffType>
     class PolynomialRing : public Polynomial<N, CoeffType> {
     public:
@@ -391,7 +391,7 @@ namespace otpq::math::als::rings::polynomial {
      */
     template<std::size_t N,
         typename CoeffType = OTPQ_ALS_UNDERLYING_TYPE,
-        typename Als = numbers::field::PrimeField<CoeffType> >
+        typename Als = field::number::PrimeField<CoeffType> >
     using PolynomialCyclotomicRing =
     PolynomialRing<N, PolyCyclotomicModulus<N>, CoeffType, Als>;
 }

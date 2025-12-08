@@ -1,13 +1,13 @@
 #include <iostream>
 #include <array>
 
-#include <otpqmath/numbers/zmod_arithmetic.h>
-#include <otpqmath/poly/module.h>
+#include <otpqmath/als/field/numbers/prime_field.h>
+#include <otpqmath/als/ring/poly/module.h>
 
-using otpq::math::als::field::PrimeField;
-using otpq::math::als::module::PolynomialFieldVector;
-using otpq::math::als::module::PolynomialFieldMatrix;
-using otpq::math::als::polynomial::PolynomialFieldCyclotomic;
+using otpq::math::als::field::number::PrimeField;
+using otpq::math::als::ring::polynomial::PolynomialCyclotomicRing;
+using otpq::math::als::ring::module::PolynomialRingVector;
+using otpq::math::als::ring::module::PolynomialRingMatrix;
 
 int main() {
     constexpr std::size_t N = 4;
@@ -25,13 +25,13 @@ int main() {
             {{5, 6, 7, 8}}
         }
     };
-    const PolynomialFieldVector v{vec_coeffs, F17};
+    const PolynomialRingVector v{vec_coeffs, F17};
     std::cout << "Vector v:\n" << v << "\n\n";
 
     // -----------------------------------------------------------
     // 2. Construct another vector using a constant polynomial
     // -----------------------------------------------------------
-    const PolynomialFieldVector<L, N> w{3, F17};
+    const PolynomialRingVector<L, N> w{3, F17};
 
     std::cout << "Vector w:\n" << w << "\n\n";
 
@@ -44,13 +44,13 @@ int main() {
         {1, 1, 2, 3}
     };
 
-    PolynomialFieldVector<K, N> u{coeff_vec, F17};
+    PolynomialRingVector<K, N> u{coeff_vec, F17};
 
 
     std::cout << "Vector u:\n" << w - w << "\n\n";
 
 
-    using Mat = PolynomialFieldMatrix<K, L, N>;
+    using Mat = PolynomialRingMatrix<K, L, N>;
     // -----------------------------------------------------------
     // 1. Construct matrix A from explicit coefficient arrays
     // -----------------------------------------------------------
@@ -114,7 +114,7 @@ int main() {
     const std::vector<int> coeff_c = {
         {4, 3, 2, 1}
     };
-    PolynomialFieldCyclotomic<N> c{coeff_c, F17};
+    PolynomialCyclotomicRing<N> c{coeff_c, F17};
 
     std::cout << "cw: " << c * w << "\n\n";
 

@@ -1,13 +1,13 @@
 #include <iostream>
 #include <complex>
 
-#include <otpqmath/als/rings/numbers/mod_ring.h>
-#include <otpqmath/als/fields/numbers/prime_field.h>
-#include <otpqmath/als/fields/numbers/complex_field.h>
+#include <otpqmath/als/ring/numbers/mod_ring.h>
+#include <otpqmath/als/field/numbers/prime_field.h>
+#include <otpqmath/als/field/numbers/complex_field.h>
 
-using otpq::math::als::numbers::ring::ModRing;
-using otpq::math::als::numbers::field::PrimeField;
-using otpq::math::als::numbers::field::ComplexField;
+using otpq::math::als::ring::numbers::ModRing;
+using otpq::math::als::field::number::PrimeField;
+using otpq::math::als::field::number::ComplexField;
 
 int main() {
     std::cout << "=== ModRing Example  (ℤ/nℤ) ===\n";

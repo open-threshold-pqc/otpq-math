@@ -3,9 +3,10 @@
 #include <vector>
 #include <cstddef>
 
-#include <fields/polynomial_fields.h>
+#include <otpqmath/als/field/numbers/prime_field.h>
+#include <otpqmath/als/ring/poly/polynomial_ring.h>
 
-namespace otpq::math::als::module {
+namespace otpq::math::als::ring::module {
     /**
      * @brief A fixed-size module vector over a polynomial ring/field.
      *
@@ -27,13 +28,13 @@ namespace otpq::math::als::module {
     template<
         std::size_t K,
         std::size_t N,
-        typename PolyMod = polynomial::CyclotomicPolyModulus<N>,
+        typename PolyMod = polynomial::PolyCyclotomicModulus<N>,
         typename CoeffType = OTPQ_ALS_UNDERLYING_TYPE,
-        typename Als = field::PrimeField<CoeffType> >
+        typename Als = field::number::PrimeField<CoeffType> >
         requires core::Field<Als, CoeffType>
-    class PolynomialFieldVector {
+    class PolynomialRingVector {
     public:
-        using Poly = polynomial::PolynomialField<N, PolyMod, CoeffType, Als>;
+        using Poly = polynomial::PolynomialRing<N, PolyMod, CoeffType, Als>;
 
         /**
          * @brief Constructs a vector of K zero polynomials.
@@ -41,8 +42,8 @@ namespace otpq::math::als::module {
          * @param alg  Algebraic structure for coefficient arithmetic.
          * @param mod  Polynomial modulus policy.
          */
-        explicit PolynomialFieldVector(const Als &alg,
-                                       const PolyMod &mod = PolyMod()) {
+        explicit PolynomialRingVector(const Als &alg,
+                                      const PolyMod &mod = PolyMod()) {
             data_.reserve(K);
             for (std::size_t i = 0; i < K; ++i)
                 data_.emplace_back(alg, mod);
@@ -55,7 +56,7 @@ namespace otpq::math::als::module {
          * @param alg     Algebraic structure.
          * @param mod     Polynomial modulus policy.
          */
-        explicit PolynomialFieldVector(
+        explicit PolynomialRingVector(
             const std::array<std::array<CoeffType, N>, K> &coeffs,
             const Als &alg,
             const PolyMod &mod = PolyMod()) {
@@ -71,7 +72,7 @@ namespace otpq::math::als::module {
          * @param alg     Algebraic structure.
          * @param mod     Polynomial modulus policy.
          */
-        explicit PolynomialFieldVector(
+        explicit PolynomialRingVector(
             std::span<const std::array<CoeffType, N>, K> spans,
             const Als &alg,
             const PolyMod &mod = PolyMod()) {
@@ -92,10 +93,10 @@ namespace otpq::math::als::module {
          * @param mod         Polynomial modulus policy.
          */
         template<typename Container>
-            requires (!std::is_same_v<std::decay_t<Container>, PolynomialFieldVector>)
-        explicit PolynomialFieldVector(const Container &container,
-                                       const Als &alg,
-                                       const PolyMod &mod = PolyMod()) {
+            requires (!std::is_same_v<std::decay_t<Container>, PolynomialRingVector>)
+        explicit PolynomialRingVector(const Container &container,
+                                      const Als &alg,
+                                      const PolyMod &mod = PolyMod()) {
             data_.reserve(K);
             std::size_t i = 0;
 
@@ -116,9 +117,9 @@ namespace otpq::math::als::module {
          * @param alg       Algebraic structure.
          * @param mod       Polynomial modulus policy.
          */
-        explicit PolynomialFieldVector(CoeffType constant,
-                                       const Als &alg,
-                                       const PolyMod &mod = PolyMod()) {
+        explicit PolynomialRingVector(CoeffType constant,
+                                      const Als &alg,
+                                      const PolyMod &mod = PolyMod()) {
             data_.reserve(K);
             for (std::size_t i = 0; i < K; ++i)
                 data_.emplace_back(constant, alg, mod);
@@ -134,9 +135,9 @@ namespace otpq::math::als::module {
          * @param alg   Algebraic structure (must match input polynomials).
          * @param mod   Polynomial modulus policy.
          */
-        explicit PolynomialFieldVector(std::initializer_list<Poly> list,
-                                       const Als &alg,
-                                       const PolyMod &mod = PolyMod()) {
+        explicit PolynomialRingVector(std::initializer_list<Poly> list,
+                                      const Als &alg,
+                                      const PolyMod &mod = PolyMod()) {
             data_.reserve(K);
             std::size_t i = 0;
 
@@ -168,10 +169,10 @@ namespace otpq::math::als::module {
         /**
          * @brief Elementwise vector addition.
          */
-        friend PolynomialFieldVector operator+(
-            const PolynomialFieldVector &a,
-            const PolynomialFieldVector &b) {
-            PolynomialFieldVector r(a.data_[0].algebra(), a.data_[0].modulus());
+        friend PolynomialRingVector operator+(
+            const PolynomialRingVector &a,
+            const PolynomialRingVector &b) {
+            PolynomialRingVector r(a.data_[0].algebra(), a.data_[0].modulus());
 
             for (std::size_t i = 0; i < K; ++i)
                 r[i] = a[i] + b[i];
@@ -182,10 +183,10 @@ namespace otpq::math::als::module {
         /**
          * @brief Elementwise vector subtraction.
          */
-        friend PolynomialFieldVector operator-(
-            const PolynomialFieldVector &a,
-            const PolynomialFieldVector &b) {
-            PolynomialFieldVector r(a.data_[0].algebra(), a.data_[0].modulus());
+        friend PolynomialRingVector operator-(
+            const PolynomialRingVector &a,
+            const PolynomialRingVector &b) {
+            PolynomialRingVector r(a.data_[0].coeff_als(), a.data_[0].poly_mod_policy());
 
             for (std::size_t i = 0; i < K; ++i)
                 r[i] = a[i] - b[i];
@@ -224,7 +225,7 @@ namespace otpq::math::als::module {
         typename Als>
     std::ostream &operator<<(
         std::ostream &os,
-        const PolynomialFieldVector<K, N, PolyMod, CoeffType, Als> &v) {
+        const PolynomialRingVector<K, N, PolyMod, CoeffType, Als> &v) {
         os << "[ \n";
         for (std::size_t i = 0; i < K; ++i) {
             os << "  " << v[i];
@@ -259,10 +260,10 @@ namespace otpq::math::als::module {
         typename PolyMod,
         typename CoeffType,
         typename Als>
-    PolynomialFieldVector<K, N, PolyMod, CoeffType, Als>
-    operator*(const polynomial::PolynomialField<N, PolyMod, CoeffType, Als> &a,
-              const PolynomialFieldVector<K, N, PolyMod, CoeffType, Als> &v) {
-        PolynomialFieldVector<K, N, PolyMod, CoeffType, Als> r(a.algebra(), a.modulus());
+    PolynomialRingVector<K, N, PolyMod, CoeffType, Als>
+    operator*(const ring::polynomial::PolynomialRing<N, PolyMod, CoeffType, Als> &a,
+              const PolynomialRingVector<K, N, PolyMod, CoeffType, Als> &v) {
+        PolynomialRingVector<K, N, PolyMod, CoeffType, Als> r(a.coeff_als(), a.poly_mod_policy());
         for (std::size_t i = 0; i < K; ++i)
             r[i] = a * v[i];
         return r;
@@ -292,10 +293,10 @@ namespace otpq::math::als::module {
         typename PolyMod,
         typename CoeffType,
         typename Als>
-    PolynomialFieldVector<K, N, PolyMod, CoeffType, Als>
-    operator*(const PolynomialFieldVector<K, N, PolyMod, CoeffType, Als> &v,
-              const polynomial::PolynomialField<N, PolyMod, CoeffType, Als> &a) {
-        PolynomialFieldVector<K, N, PolyMod, CoeffType, Als> r(a.algebra(), a.modulus());
+    PolynomialRingVector<K, N, PolyMod, CoeffType, Als>
+    operator*(const PolynomialRingVector<K, N, PolyMod, CoeffType, Als> &v,
+              const polynomial::PolynomialRing<N, PolyMod, CoeffType, Als> &a) {
+        PolynomialRingVector<K, N, PolyMod, CoeffType, Als> r(a.algebra(), a.modulus());
         for (std::size_t i = 0; i < K; ++i)
             r[i] = v[i] * a;
         return r;
@@ -325,21 +326,21 @@ namespace otpq::math::als::module {
         std::size_t K,
         std::size_t L,
         std::size_t N,
-        typename PolyMod = polynomial::CyclotomicPolyModulus<N>,
+        typename PolyMod = polynomial::PolyCyclotomicModulus<N>,
         typename CoeffType = OTPQ_ALS_UNDERLYING_TYPE,
-        typename Als = field::PrimeField<CoeffType> >
+        typename Als = field::number::PrimeField<CoeffType> >
         requires core::Field<Als, CoeffType>
-    class PolynomialFieldMatrix {
+    class PolynomialRingMatrix {
     public:
-        using Poly = polynomial::PolynomialField<N, PolyMod, CoeffType, Als>;
-        using VecCols = PolynomialFieldVector<L, N, PolyMod, CoeffType, Als>;
-        using VecRows = PolynomialFieldVector<K, N, PolyMod, CoeffType, Als>;
+        using Poly = polynomial::PolynomialRing<N, PolyMod, CoeffType, Als>;
+        using VecCols = PolynomialRingVector<L, N, PolyMod, CoeffType, Als>;
+        using VecRows = PolynomialRingVector<K, N, PolyMod, CoeffType, Als>;
 
         /**
      * @brief Constructs a K×L zero matrix.
      */
-        explicit PolynomialFieldMatrix(const Als &alg,
-                                       const PolyMod &mod = PolyMod()) {
+        explicit PolynomialRingMatrix(const Als &alg,
+                                      const PolyMod &mod = PolyMod()) {
             data_.resize(K);
             for (std::size_t i = 0; i < K; ++i) {
                 data_[i].reserve(L);
@@ -351,7 +352,7 @@ namespace otpq::math::als::module {
         /**
          * @brief Constructs from K×L arrays of N coefficients.
          */
-        explicit PolynomialFieldMatrix(
+        explicit PolynomialRingMatrix(
             const std::array<std::array<std::array<CoeffType, N>, L>, K> &coeffs,
             const Als &alg,
             const PolyMod &mod = PolyMod()) {
@@ -366,7 +367,7 @@ namespace otpq::math::als::module {
         /**
          * @brief Constructs from a span of K rows of L coefficient arrays.
          */
-        explicit PolynomialFieldMatrix(
+        explicit PolynomialRingMatrix(
             std::span<const std::array<std::array<CoeffType, N>, L>, K> rows,
             const Als &alg,
             const PolyMod &mod = PolyMod()) {
@@ -382,10 +383,10 @@ namespace otpq::math::als::module {
          * @brief Constructs from an arbitrary nested container.
          */
         template<class Container>
-            requires (!std::is_same_v<std::decay_t<Container>, PolynomialFieldMatrix>)
-        explicit PolynomialFieldMatrix(const Container &rows,
-                                       const Als &alg,
-                                       const PolyMod &mod = PolyMod()) {
+            requires (!std::is_same_v<std::decay_t<Container>, PolynomialRingMatrix>)
+        explicit PolynomialRingMatrix(const Container &rows,
+                                      const Als &alg,
+                                      const PolyMod &mod = PolyMod()) {
             data_.resize(K);
             std::size_t i = 0;
 
@@ -417,9 +418,9 @@ namespace otpq::math::als::module {
         /**
          * @brief Constructs all entries as constant polynomials.
          */
-        explicit PolynomialFieldMatrix(CoeffType constant,
-                                       const Als &alg,
-                                       const PolyMod &mod = PolyMod()) {
+        explicit PolynomialRingMatrix(CoeffType constant,
+                                      const Als &alg,
+                                      const PolyMod &mod = PolyMod()) {
             data_.resize(K);
             for (std::size_t i = 0; i < K; ++i) {
                 data_[i].reserve(L);
@@ -444,10 +445,10 @@ namespace otpq::math::als::module {
          *
          * Returns A + B computed elementwise.
          */
-        friend PolynomialFieldMatrix operator+(
-            const PolynomialFieldMatrix &A,
-            const PolynomialFieldMatrix &B) {
-            PolynomialFieldMatrix R(A.data_[0][0].algebra(), A.data_[0][0].modulus());
+        friend PolynomialRingMatrix operator+(
+            const PolynomialRingMatrix &A,
+            const PolynomialRingMatrix &B) {
+            PolynomialRingMatrix R(A.data_[0][0].algebra(), A.data_[0][0].modulus());
 
             for (std::size_t i = 0; i < K; ++i)
                 for (std::size_t j = 0; j < L; ++j)
@@ -462,10 +463,10 @@ namespace otpq::math::als::module {
          *
          * Returns A - B computed elementwise.
          */
-        friend PolynomialFieldMatrix operator-(
-            const PolynomialFieldMatrix &A,
-            const PolynomialFieldMatrix &B) {
-            PolynomialFieldMatrix R(A.data_[0][0].algebra(), A.data_[0][0].modulus());
+        friend PolynomialRingMatrix operator-(
+            const PolynomialRingMatrix &A,
+            const PolynomialRingMatrix &B) {
+            PolynomialRingMatrix R(A.data_[0][0].algebra(), A.data_[0][0].modulus());
 
             for (std::size_t i = 0; i < K; ++i)
                 for (std::size_t j = 0; j < L; ++j)
@@ -480,9 +481,9 @@ namespace otpq::math::als::module {
          *
          * A is K×L, x is length L, result is length K.
          */
-        friend VecRows operator*(const PolynomialFieldMatrix &A,
+        friend VecRows operator*(const PolynomialRingMatrix &A,
                                  const VecCols &x) {
-            VecRows y{A[0,0].algebra(), A[0,0].modulus()}; // zero vector of length K
+            VecRows y{A[0,0].coeff_als(), A[0,0].poly_mod_policy()}; // zero vector of length K
 
             for (std::size_t i = 0; i < K; ++i) {
                 for (std::size_t j = 0; j < L; ++j)
@@ -524,7 +525,7 @@ namespace otpq::math::als::module {
         typename Als>
     std::ostream &operator<<(
         std::ostream &os,
-        const PolynomialFieldMatrix<K, L, N, PolyMod, CoeffType, Als> &M) {
+        const PolynomialRingMatrix<K, L, N, PolyMod, CoeffType, Als> &M) {
         os << "[\n";
         for (std::size_t i = 0; i < K; ++i) {
             os << "  [ ";
